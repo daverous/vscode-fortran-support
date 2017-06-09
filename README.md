@@ -25,5 +25,14 @@ Please report any issues and feature request on the github repo [here](https://g
 The syntax highlight support was imported from [TextMate bundle](https://github.com/textmate/fortran.tmbundle)
 
 The idea of using gfortran cames from this awesome [fortran plugin](https://github.com/315234/SublimeFortran) for Sublime Text.
+
+This is a fork of the repo https://github.com/krvajalmiguelangel/vscode-fortran-support, but with better syntax highlighting and ifort support rather than VS code.
+
+
 ## LICENSE 
+
+
+
+
+
 MIT

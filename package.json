@@ -1,16 +1,16 @@
 {
     "name": "linter-gfortran",
-    "displayName": "Modern Fortran",
+    "displayName": "AlphasuiteFortran",
     "description": "Modern Fortran language support, including syntax highlighting and error detection.",
-    "version": "0.4.2",
-    "publisher": "krvajalm",
+    "version": "0.1.0",
+    "publisher": "daverous",
     "engines": {
         "vscode": "^1.12.0"
     },
     "icon": "images/icon.png",
     "repository": {
         "type": "git",
-        "url": "https://github.com/krvajalmiguelangel/vscode-fortran-support.git"
+        "url": "https://github.com/daverous/vscode-fortran-support"
     },
     "categories": [
         "Languages",

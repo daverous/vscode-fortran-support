@@ -25,8 +25,8 @@ export default class FortranLintingProvider {
 		let diagnostics: vscode.Diagnostic[] = [];
 		let options = vscode.workspace.rootPath ? { cwd: vscode.workspace.rootPath } : undefined;
 		let args = ['', textDocument.fileName];
-		// let childProcess = cp.spawn('gfortran', ['-cpp', '-fsyntax-only', '-Wall','-fdiagnostics-show-option', textDocument.fileName]);
-		let childProcess = cp.spawn('ifort', ['-cpp', '-fsyntax-only', '-Warn all', textDocument.fileName]);
+		let childProcess = cp.spawn('gfortran', ['-cpp', '-fsyntax-only', '-Wall','-fdiagnostics-show-option', textDocument.fileName]);
+		// let childProcess = cp.spawn('ifort', ['-cpp', '-fsyntax-only', '-Warn all', textDocument.fileName]);
 
 		// let childProcess = cp.spawn('ps', ['ax']);
 		if (childProcess.pid) {

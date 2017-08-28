@@ -26,7 +26,7 @@ export default class FortranLintingProvider {
         }
         let decoded = '';
         let diagnostics: vscode.Diagnostic[] = [];
-        let command = this.getGfortranPath();
+        let command = this.getFortranCompilerPath();
         let argList = this.constructArgumentList(textDocument);
 
         let filePath  = path.parse(textDocument.fileName).dir;
@@ -63,7 +63,7 @@ export default class FortranLintingProvider {
         } else {
             childProcess.on('error', (err: any) => {
                 if (err.code === "ENOENT") {
-                    vscode.window.showErrorMessage("gfortran can't found on path, update your settings with a proper path or disable the linter.");
+                    vscode.window.showErrorMessage("ifort can't found on path, update your settings with a proper path or disable the linter.");
                 }
 
             });
@@ -95,7 +95,7 @@ export default class FortranLintingProvider {
         return;
         // let diagnostic: vscode.Diagnostic = context.diagnostics[0];
         // return [{
-        // 	title: "Accept gfortran suggestion",
+        // 	title: "Accept ifort suggestion",
         // 	command: FortranLintingProvider.commandId,
         // 	arguments: [document, diagnostic.range, diagnostic.message]
         // }];
@@ -115,7 +115,7 @@ export default class FortranLintingProvider {
 
         vscode.workspace.onDidSaveTextDocument(this.doModernFortranLint, this);
 
-        // Run gfortran in all open fortran files
+        // Run ifort in all open fortran files
         vscode.workspace.textDocuments.forEach(this.doModernFortranLint, this);
     }
 
@@ -131,9 +131,9 @@ export default class FortranLintingProvider {
 
         return includePaths;
     }
-    private getGfortranPath(): string {
+    private getFortranCompilerPath(): string {
         let config = vscode.workspace.getConfiguration('fortran');
-        return config.get("gfortranExecutable", "gfortran");
+        return config.get("fortranCompilerExecutable", "ifort");
     }
     private getLinterExtraArgs(): string[] {
         let config = vscode.workspace.getConfiguration('fortran');

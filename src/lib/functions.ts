@@ -62,6 +62,34 @@ export function getDeclaredSubroutines(document: vscode.TextDocument):Subroutine
 
 
 
+export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.TextDocument):[Subroutine[],Function[],Variable[]]{
+    
+        let lines = document.lineCount;
+        let subroutines = [];
+        let funcs = [];
+        let vars = [];
+        for (let i = 0; i < lines; i++) {
+            let line: vscode.TextLine = document.lineAt(i);
+            if (line.isEmptyOrWhitespace) continue;
+            let subFuct = parseSubroutineAndFunctions(line.text);
+
+            if (subFuct != null) {
+                if(subFuct.what == "sub"){
+                    subroutines.push({...subFuct, lineNumber: i });
+                }
+                else if (subFuct.what == "func") {
+                    funcs.push({...subFuct, lineNumber: i });
+                }
+                // else if (subFuct.what == "var") {
+                //     vars.push({...subFuct, lineNumber: i });
+                // }
+            }
+        }
+        return [subroutines,funcs,vars];
+    }
+
+
+
 export const parseFunction = (line: string) => {
 
     return _parse(line, MethodType.Function);
@@ -71,9 +99,15 @@ export const parseSubroutine = (line: string) => {
 
     return _parse(line, MethodType.Subroutine);
 }
+
+export const parseSubroutineAndFunctions = (line: string) => {
+    
+        return _parse_new(line);
+    }
+
 export const _parse = (line: string, type: MethodType) => {
 
-    const functionRegEx = /([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)\s*(result\([a-zA-Z_][\w]*\))*/g;
+    const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)\s*(result\([a-zA-Z_][\w]*\))*/g;
     const subroutineRegEx = /subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)/g;
     const regEx = (type === MethodType.Subroutine) ? subroutineRegEx : functionRegEx;
     if (line.match(regEx) && type === MethodType.Function) {
@@ -94,6 +128,37 @@ export const _parse = (line: string, type: MethodType) => {
 
 }
 
+
+export const _parse_new = (line: string) => {
+        line = line.trim()
+        const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
+        const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+        const varibleDecRegEx = /([a-zA-Z]{1,}(\([a-zA-Z0-9]{1,}\))?)(\s*,\s*[a-zA-Z\(\)])*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+        if (line.match(functionRegEx)) {
+            let [attr, kind_descriptor, name, argsstr, result] = functionRegEx.exec(line).slice(1, 5);
+            let args = (argsstr) ? parseArgs(argsstr) : [];
+            return {
+                what: "func",
+                name: name,
+                args: args
+            };
+        } else if (line.match(subroutineRegEx)) {
+            let temp =subroutineRegEx.exec(line)
+            let name = temp[2]
+            let argsstr = temp[3];
+            // l/et [name, argsstr] = temp.slice(1);
+            let args = (argsstr) ? parseArgs(argsstr) : [];
+            return {
+                what: "sub",
+                name: name,
+                args: args
+            };
+        } else if(line.match(varibleDecRegEx)) {
+            let [matchExp, type, kind, props, name ] = varibleDecRegEx.exec(line)
+            return {what: "var", name: name, type: type};
+        } 
+    
+    }
 
 
 

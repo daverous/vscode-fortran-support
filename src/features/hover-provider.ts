@@ -9,6 +9,7 @@ import { isIntrinsic, loadDocString } from '../lib/helper';
 export default class FortranHoverProvider {
 
     public provideHover(document: TextDocument, position: Position, token: CancellationToken): Hover | Thenable<Hover> {
+        console.log("here")
         let wordRange = document.getWordRangeAtPosition(position);
         let word = document.getText(wordRange);
         

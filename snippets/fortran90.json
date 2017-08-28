@@ -54,6 +54,17 @@
         ],
         "description": "Create a function"
     },
+    "Block": {
+        "prefix": "blo",
+        "body": [
+            "block",
+            "${4:type} :: ${2:arg}",
+            "    !TODO_add_body",
+            "    ${5}",
+            "end block"
+        ],
+        "description": "Create a block"
+    },
     "Module documentation header": {
         "prefix": "modoc" ,
         "body": [ "!------------------------------------------------------------------------------",

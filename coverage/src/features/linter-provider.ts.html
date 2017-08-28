@@ -468,7 +468,7 @@ import ChildProcess = cp.ChildProcess;
     }
     private getLinterExtraArgs<span class="fstat-no" title="function not covered" >(): string[] {</span>
 <span class="cstat-no" title="statement not covered" >        let config = vscode.workspace.getConfiguration('fortran');</span>
-<span class="cstat-no" title="statement not covered" >        return config.get("linterExtraArgs", ["-Wall"]);</span>
+<span class="cstat-no" title="statement not covered" >        return config.get("linterExtraArgs", ["-warn all"]);</span>
     }
 &nbsp;
 }

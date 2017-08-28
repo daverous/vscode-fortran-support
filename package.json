@@ -1,9 +1,9 @@
 {
     "name": "linter-ifort",
     "displayName": "AlphasuiteFortran",
-    "description": "Modern Fortran language support, including syntax highlighting and error detection.",
-    "version": "0.5.2",
-    "publisher": "krvajalm",
+    "description": "Modern Fortran language support, including syntax highlighting and symbol search",
+    "version": "0.1.1",
+    "publisher": "dwilso18",
     "engines": {
         "vscode": "^1.10.0"
     },
@@ -21,7 +21,14 @@
         "onLanguage:fortran90"
     ],
     "main": "./out/src/extension",
+   
     "contributes": {
+        "commands": [
+            {
+            "command": "alphagenes.runcmake",
+            "title": "Run cmake Command"
+          }
+        ],
         "languages": [
             {
                 "id": "fortran90",
@@ -91,7 +98,7 @@
                 },
                 "fortran.linterEnabled": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Enables or disables the linter functionality"
                 },
                 "fortran.linterExtraArgs": {
@@ -102,7 +109,7 @@
                         "type": "string"
                     },
                     "default": [
-                        "-Wall"
+                        "-Warn all"
                     ],
                     "description": "Specify additional options to use when calling the ifort compiler"
                 }

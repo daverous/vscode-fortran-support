@@ -105,7 +105,7 @@
 <span class="cstat-no" title="statement not covered" >    let completionProvider = new FortranCompletionProvider();</span>
 <span class="cstat-no" title="statement not covered" >    let symbolProvider = new FortranDocumentSymbolProvider();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (vscode.workspace.getConfiguration('fortran').get('linterEnabled', true)) {</span>
+<span class="cstat-no" title="statement not covered" >    if (vscode.workspace.getConfiguration('fortran').get('linterEnabled', false)) {</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        let linter = new FortranLintingProvider();</span>
 <span class="cstat-no" title="statement not covered" >        linter.activate(context.subscriptions);</span>

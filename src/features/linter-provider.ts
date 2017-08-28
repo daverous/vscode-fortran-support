@@ -74,14 +74,13 @@ export default class FortranLintingProvider {
     private constructArgumentList(textDocument:vscode.TextDocument): string[] {
 
         let options = vscode.workspace.rootPath ? { cwd: vscode.workspace.rootPath } : undefined;
-        let args = [  "-fsyntax-only", "-cpp", '-fdiagnostics-show-option', ...this.getLinterExtraArgs()];
+        let args = [  "-fsyntax-only", "-cpp", ...this.getLinterExtraArgs()];
         let includePaths = this.getIncludePaths();
         
         let extensionIndex = textDocument.fileName.lastIndexOf('.');
         let fileNameWithoutExtension = textDocument.fileName.substring(0,extensionIndex);
         let argList = [
-            ...args,
-            getIncludeParams(includePaths), // include paths
+            ...args, // include paths
             textDocument.fileName,
             `-o ${fileNameWithoutExtension}.mod`
         ];
@@ -137,7 +136,7 @@ export default class FortranLintingProvider {
     }
     private getLinterExtraArgs(): string[] {
         let config = vscode.workspace.getConfiguration('fortran');
-        return config.get("linterExtraArgs", ["-Wall"]);
+        return config.get("linterExtraArgs", ["-warn all"]);
     }
 
 }

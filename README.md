@@ -33,10 +33,10 @@ By default the `ifort` executable is assumed to be found in the path. In order t
     "fortran.fortranCompilerExecutable": '/usr/local/bin/ifort',
 }
 ```
-If you want to pass extra options to the `ifort` executable or override the default one, you can use the setting `fortran.linterExtraArgs`. By default `-Wall` is the only option.
+If you want to pass extra options to the `ifort` executable or override the default one, you can use the setting `fortran.linterExtraArgs`. By default `-warn all` is the only option.
 ```
 {
-    "fortran.linterExtraArgs": ['-Wall'],
+    "fortran.linterExtraArgs": ['-warn all'],
 }
 ```
 

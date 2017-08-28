@@ -4,7 +4,7 @@ import { CancellationToken, TextDocument, Position, Hover } from "vscode";
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { isPositionInString, intrinsics, FORTRAN_KEYWORDS } from "../lib/helper";
-import { getDeclaredFunctions } from "../lib/functions";
+import { getDeclaredSubroutinesVariablesAndFunctions } from "../lib/functions";
 
 
 export class FortranCompletionProvider implements vscode.CompletionItemProvider {
@@ -55,11 +55,29 @@ export class FortranCompletionProvider implements vscode.CompletionItemProvider 
                     }
                 });
             }
-            const functions = getDeclaredFunctions(document);
+
+
+            let funcsSubsAndVars = getDeclaredSubroutinesVariablesAndFunctions(document);
+
+            const subs = funcsSubsAndVars[0]
             // check for available functions
-            functions.filter(fun => fun.name.startsWith(currentWord))
+            subs.filter(sub => sub.name.toLowerCase().startsWith(currentWord.toLowerCase()))
+            .forEach(sub =>{
+                suggestions.push(new vscode.CompletionItem(sub.name, vscode.CompletionItemKind.Function));   
+            });
+
+            const functions = funcsSubsAndVars[1];
+            // check for available functions
+            functions.filter(fun => fun.name.toLowerCase().startsWith(currentWord.toLowerCase()))
             .forEach(fun =>{
                 suggestions.push(new vscode.CompletionItem(fun.name, vscode.CompletionItemKind.Function));   
+            });
+            
+            const vars = funcsSubsAndVars[2];
+            // check for available functions
+            vars.filter(v => v.name.toLowerCase().startsWith(currentWord.toLowerCase()))
+            .forEach(v =>{
+                suggestions.push(new vscode.CompletionItem(v.name, vscode.CompletionItemKind.Function));   
             });
             
 

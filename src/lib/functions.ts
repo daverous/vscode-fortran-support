@@ -80,9 +80,9 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
                 else if (subFuct.what == "func") {
                     funcs.push({...subFuct, lineNumber: i });
                 }
-                // else if (subFuct.what == "var") {
-                //     vars.push({...subFuct, lineNumber: i });
-                // }
+                else if (subFuct.what == "var") {
+                    vars.push({...subFuct, lineNumber: i });
+                }
             }
         }
         return [subroutines,funcs,vars];

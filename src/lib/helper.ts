@@ -38,7 +38,7 @@ interface Doc {
 
 export const loadDocString = (keyword) => {
     keyword = keyword.toUpperCase();
-    let filepath = __dirname + "/../docs/" + keyword + ".json";
+    let filepath = __dirname + "/../../../src/docs/" + keyword + ".json";
     let docstr = fs.readFileSync(filepath).toString();
     let doc: Doc = JSON.parse(docstr);
     return doc.docstr;
@@ -77,7 +77,6 @@ export const _loadDocString = (keyword: string) => {
             return `${header} ${code}\n`;
         });
     docText = docText.replace(/^ *<br>\n?/gm, '\n').replace(/<\?dl>/g, "");
-    console.log(docText);
     return docText;
 }
 

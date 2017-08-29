@@ -8,12 +8,27 @@ export interface Variable {
     parent?: string;
 }
 
+export interface Class {
+    name: string;
+    type?: string;
+    lineNumber?: number;
+    parent?: string;
+}
+
+export interface Package {
+    name: string;
+    type?: string;
+    lineNumber?: number;
+    parent?: string;
+}
+
 
 export interface Subroutine {
 
     name: string;
     args: Variable[];
     docstr: string;
+    parent?: string;
     lineNumber: number
 }
 
@@ -63,36 +78,55 @@ export function getDeclaredSubroutines(document: vscode.TextDocument):Subroutine
 
 
 
-export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.TextDocument):[Subroutine[],Function[],Variable[]]{
+export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.TextDocument):[Subroutine[],Function[],Variable[],Class[],Package[]]{
     
         let lines = document.lineCount;
         let subroutines = [];
         let funcs = [];
         let vars = [];
-        let curSubName = ""
+        let classes = [];
+        let packs = [];
+        let curBlock = [];
         for (let i = 0; i < lines; i++) {
             let line: vscode.TextLine = document.lineAt(i);
             if (line.isEmptyOrWhitespace) continue;
-            let subFuct = parseSubroutineAndFunctions(line.text,curSubName );
+            let subFuct = parseSubroutineAndFunctions(line.text,curBlock[curBlock.length-1] );
 
             if (subFuct != null) {
                 if (subFuct.what =="end") {
-
+                    // pop item off the top of the stack 
+                    curBlock.pop();
                 }
-                if(subFuct.what == "sub"){
-                    curSubName = subFuct.name;
-                    subroutines.push({...subFuct, lineNumber: i });
+                else if(subFuct.what == "program"){
+                    curBlock.push(subFuct.name);
+                    packs.push({...subFuct, parent  : subFuct.in,lineNumber: i });
+                }
+                else if(subFuct.what == "module"){
+                    curBlock.push(subFuct.name);
+                    packs.push({...subFuct, parent  : subFuct.in,lineNumber: i });
+                }
+                else if(subFuct.what == "inter"){
+                    curBlock.push(subFuct.name);
+                    classes.push({...subFuct, parent  : subFuct.in,lineNumber: i });
+                }
+                else if(subFuct.what == "sub"){
+                    curBlock.push(subFuct.name);
+                    subroutines.push({...subFuct, parent  : subFuct.in,lineNumber: i });
                 }
                 else if (subFuct.what == "func") {
-                    curSubName = subFuct.name;
-                    funcs.push({...subFuct, lineNumber: i });
+                    curBlock.push(subFuct.name);
+                    funcs.push({...subFuct,parent  : subFuct.in, lineNumber: i });
                 }
                 else if (subFuct.what == "var") {
                     vars.push({...subFuct, lineNumber: i , parent  : subFuct.in, type : subFuct.type});
                 }
+                else if (subFuct.what == "class") {
+                    curBlock.push(subFuct.name);
+                    classes.push({...subFuct, lineNumber: i , parent  : subFuct.in, type : subFuct.type});
+                }
             }
         }
-        return [subroutines,funcs,vars];
+        return [subroutines,funcs,vars, classes,packs];
     }
 
 
@@ -116,6 +150,7 @@ export const _parse = (line: string, type: MethodType) => {
 
     const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)\s*(result\([a-zA-Z_][\w]*\))*/g;
     const subroutineRegEx = /subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)/g;
+    const interfaceRegEx = /subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)/g;
     const regEx = (type === MethodType.Subroutine) ? subroutineRegEx : functionRegEx;
     if (line.match(regEx) && type === MethodType.Function) {
         let [attr, kind_descriptor, name, argsstr, result] = regEx.exec(line).slice(1, 5);
@@ -141,8 +176,12 @@ export const _parse_new = (line: string, parent: string) => {
         const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
         const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
         const varibleDecRegEx = /(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
-        const endRegex = /^(end)/ig;
-
+        const typeDecRegEx = /type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+        const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+        const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do))end)/ig; // regex means that ends won't work for inside
+        // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
+        const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+        const moduleRegex = /^module\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 
         if (line.match(endRegex)) {
             return {
@@ -176,11 +215,28 @@ export const _parse_new = (line: string, parent: string) => {
                 type : "",
                 in: parent // add a field to show if the variable is in
             };
+        } else if(line.match(typeDecRegEx)) {
+            
+            let [matchExp, type, name ] = typeDecRegEx.exec(line);
+            return {what: "class", name: name, type: type, in: parent};
+        } else if(line.match(interfaceRegEx)) {
+            
+            let [matchExp, name ] = interfaceRegEx.exec(line);
+            return {what: "inter", name: name, type: "", in: parent};
         } else if(line.match(varibleDecRegEx)) {
             
             let [matchExp, type, kind, props,temp,temp2, name ] = varibleDecRegEx.exec(line)
             return {what: "var", name: name, type: type, in: parent};
-        } 
+        } else if(line.match(programRegex)) {
+            
+            let [matchExp, name ] = programRegex.exec(line);
+            return {what: "program", name: name, type: "", in: parent};
+        }
+        else if(line.match(moduleRegex)) {
+            
+            let [matchExp, name ] = moduleRegex.exec(line);
+            return {what: "module", name: name, type: "", in: parent};
+        }  
     
     }
 

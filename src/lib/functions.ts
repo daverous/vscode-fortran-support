@@ -5,6 +5,7 @@ export interface Variable {
     name: string;
     type?: string;
     lineNumber?: number;
+    parent?: string;
 }
 
 
@@ -68,20 +69,26 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
         let subroutines = [];
         let funcs = [];
         let vars = [];
+        let curSubName = ""
         for (let i = 0; i < lines; i++) {
             let line: vscode.TextLine = document.lineAt(i);
             if (line.isEmptyOrWhitespace) continue;
-            let subFuct = parseSubroutineAndFunctions(line.text);
+            let subFuct = parseSubroutineAndFunctions(line.text,curSubName );
 
             if (subFuct != null) {
+                if (subFuct.what =="end") {
+
+                }
                 if(subFuct.what == "sub"){
+                    curSubName = subFuct.name;
                     subroutines.push({...subFuct, lineNumber: i });
                 }
                 else if (subFuct.what == "func") {
+                    curSubName = subFuct.name;
                     funcs.push({...subFuct, lineNumber: i });
                 }
                 else if (subFuct.what == "var") {
-                    vars.push({...subFuct, lineNumber: i });
+                    vars.push({...subFuct, lineNumber: i , parent  : subFuct.in, type : subFuct.type});
                 }
             }
         }
@@ -100,9 +107,9 @@ export const parseSubroutine = (line: string) => {
     return _parse(line, MethodType.Subroutine);
 }
 
-export const parseSubroutineAndFunctions = (line: string) => {
+export const parseSubroutineAndFunctions = (line: string, curSubName : string) => {
     
-        return _parse_new(line);
+        return _parse_new(line,curSubName);
     }
 
 export const _parse = (line: string, type: MethodType) => {
@@ -129,18 +136,32 @@ export const _parse = (line: string, type: MethodType) => {
 }
 
 
-export const _parse_new = (line: string) => {
+export const _parse_new = (line: string, parent: string) => {
         line = line.trim()
         const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
         const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-        const varibleDecRegEx = /([a-zA-Z]{1,}(\([a-zA-Z0-9]{1,}\))?)(\s*,\s*[a-zA-Z\(\)])*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
-        if (line.match(functionRegEx)) {
+        const varibleDecRegEx = /(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+        const endRegex = /^(end)/ig;
+
+
+        if (line.match(endRegex)) {
+            return {
+                what: "end",
+                name: "",
+                args: "",
+                type : "",
+                in: ""
+            }
+        }
+        else if (line.match(functionRegEx)) {
             let [attr, kind_descriptor, name, argsstr, result] = functionRegEx.exec(line).slice(1, 5);
             let args = (argsstr) ? parseArgs(argsstr) : [];
             return {
                 what: "func",
                 name: name,
-                args: args
+                args: args,
+                type: kind_descriptor,
+                in: parent
             };
         } else if (line.match(subroutineRegEx)) {
             let temp =subroutineRegEx.exec(line)
@@ -151,11 +172,14 @@ export const _parse_new = (line: string) => {
             return {
                 what: "sub",
                 name: name,
-                args: args
+                args: args,
+                type : "",
+                in: parent // add a field to show if the variable is in
             };
         } else if(line.match(varibleDecRegEx)) {
-            let [matchExp, type, kind, props, name ] = varibleDecRegEx.exec(line)
-            return {what: "var", name: name, type: type};
+            
+            let [matchExp, type, kind, props,temp,temp2, name ] = varibleDecRegEx.exec(line)
+            return {what: "var", name: name, type: type, in: parent};
         } 
     
     }

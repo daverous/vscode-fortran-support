@@ -7,7 +7,7 @@
     "engines": {
         "vscode": "^1.10.0"
     },
-    "icon": "images/icon.png",
+    "icon": "images/Alpha-logo-blue-01.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/daverous/vscode-fortran-support"
@@ -15,7 +15,8 @@
     "categories": [
         "Languages",
         "Snippets",
-        "Linters"
+        "Linters",
+        "Formatters"
     ],
     "activationEvents": [
         "onLanguage:fortran90"
@@ -112,6 +113,200 @@
                         "-Warn all"
                     ],
                     "description": "Specify additional options to use when calling the ifort compiler"
+                },
+                "format.workspaceDisabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Wether or not to disable formatting on the entire workspace."
+                },
+                "format.disabled": {
+                    "type": "array",
+                    "default": [
+                        "html",
+                        "markdown",
+                        "plaintext",
+                        "diff",
+                        "jade",
+                        "xml",
+                        "blade",
+                        "handlebars",
+                        "tpl"
+                    ],
+                    "description": "A list of of languages that the formatter is disabled on."
+                },
+                "format.newLine": {
+                    "type": "object",
+                    "default": {
+                        "brace": false
+                    },
+                    "description": "Whether or not to put items on a new line or the same line."
+                },
+                "format.onType": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enables or disables formatting while typing."
+                },
+                "format.space": {
+                    "type": "object",
+                    "description": "The number of spaces to place before/after particular character.",
+                    "default": {
+                        "language": {
+                            "php": {
+                                ".": {
+                                    "before": 1,
+                                    "after": 1
+                                }
+                            },
+                            "javascript": {
+                                "+": {
+                                    "before": 1,
+                                    "after": 1
+                                }
+                            },
+                            "java": {
+                                "+": {
+                                    "before": 1,
+                                    "after": 1
+                                }
+                            },
+                            "css": {
+                                ":": {
+                                    "before": 0,
+                                    "after": 1
+                                },
+                                "=": {
+                                    "before": 0,
+                                    "after": 0
+                                }
+                            }
+                        },
+                        "and": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "or": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "equal": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "not": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "greaterThan": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "lessThan": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "comma": {
+                            "before": 0,
+                            "after": 1
+                        },
+                        "question": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "colon": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "semicolon": {
+                            "before": 0,
+                            "after": 1
+                        },
+                        "increment": {
+                            "before": 0,
+                            "after": 0
+                        },
+                        "decrement": {
+                            "before": 0,
+                            "after": 0
+                        },
+                        "add": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "subtract": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "multiply": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "divide": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "modulo": {
+                            "before": 1,
+                            "after": 1
+                        },
+                        "parenthesis": {
+                            "open": {
+                                "before": {
+                                    "other": 1,
+                                    "foreach": 1,
+                                    "for": 1,
+                                    "while": 1,
+                                    "if": 1,
+                                    "elseif": 1,
+                                    "elif": 1,
+                                    "switch": 1,
+                                    "do": 1,
+                                    "function": 1
+                                },
+                                "after": {
+                                    "other": 1,
+                                    "foreach": 0,
+                                    "for": 0,
+                                    "while": 0,
+                                    "if": 0,
+                                    "elseif": 0,
+                                    "elif": 0,
+                                    "switch": 0,
+                                    "do": 0,
+                                    "function": 0
+                                }
+                            },
+                            "close": {
+                                "before": {
+                                    "other": 1,
+                                    "foreach": 0,
+                                    "for": 0,
+                                    "while": 0,
+                                    "if": 0,
+                                    "elseif": 0,
+                                    "elif": 0,
+                                    "switch": 0,
+                                    "do": 0,
+                                    "function": 0
+                                }
+                            }
+                        },
+                        "brace": {
+                            "open": {
+                                "before": {
+                                    "other": 1,
+                                    "foreach": 1,
+                                    "for": 1,
+                                    "while": 1,
+                                    "if": 1,
+                                    "elseif": 1,
+                                    "elif": 1,
+                                    "switch": 1,
+                                    "do": 1,
+                                    "function": 1
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

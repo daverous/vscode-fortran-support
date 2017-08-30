@@ -1,5 +1,5 @@
-import * as vscode from 'vscode';
-import { parseSubroutineAndFunctions } from '../lib/functions';
+// import * as vscode from 'vscode';
+// import { parseSubroutineAndFunctions } from '../lib/functions';
 
 // export class AlphaFortranFormatter implements vscode.DocumentFormattingEditProvider {
 //     provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.ProviderResult<vscode.TextEdit[]> {
@@ -46,5 +46,5 @@ import { parseSubroutineAndFunctions } from '../lib/functions';
 
 
         
-    }
+    // }
     

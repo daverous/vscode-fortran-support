@@ -6,7 +6,7 @@
 // The module 'assert' provides assertion methods from node
 import * as assert from 'assert';
 import * as fs from 'fs';
-import { validVariableName, parseFunction, parseArgs } from '../src/lib/functions';
+import { validVariableName, parseArgs } from '../src/lib/functions';
 
 suite("function helper test", () => {
 
@@ -26,21 +26,21 @@ suite("function helper test", () => {
         assert.equal(true, validVariableName("_matA"));
     });
 
-    test("parseFuntion return undefined on empty line", () => {
-        assert.equal(undefined, parseFunction(""));
-    });
+    // test("parseFuntion return undefined on empty line", () => {
+    //     assert.equal(undefined, parseFunction(""));
+    // });
 
-    test("parseFuntion return undefined if function keyword is missing", () => {
-        assert.equal(undefined, parseFunction("hello"));
-    });
+    // test("parseFuntion return undefined if function keyword is missing", () => {
+    //     assert.equal(undefined, parseFunction("hello"));
+    // });
 
-    test("parseFuntion return correct function name", () => {
-        assert.equal("hello", parseFunction("function hello()").name);
-    });
+    // test("parseFuntion return correct function name", () => {
+    //     assert.equal("hello", parseFunction("function hello()").name);
+    // });
 
-    test("parseFuntion return correct number of args", () => {
-        assert.equal(2, parseFunction("function hello( a, b)").args.length);
-    });
+    // test("parseFuntion return correct number of args", () => {
+    //     assert.equal(2, parseFunction("function hello( a, b)").args.length);
+    // });
 
     test("parseArgs return the correct number of args", () => {
         assert.equal(2, parseArgs("a,b").length);

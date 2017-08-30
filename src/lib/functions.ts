@@ -2,14 +2,14 @@
 import * as vscode from 'vscode';
 
 export const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
-export const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-export const varibleDecRegEx = /(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
-export const typeDecRegEx = /type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+export const subroutineRegEx = /(^(?!end\s))([a-zA-Z]{1,}\s+)*subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do))end)/ig; // regex means that ends won't work for inside
+export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
 // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
 export const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-export const moduleRegex = /^module\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const moduleRegex = /^module\s+((?!procedure\s+)[a-zA-Z0-9_]{1,})/ig;
 export const ifRegexe = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
 export const blockReger = /^(block)/ig;
 
@@ -58,39 +58,6 @@ export enum MethodType {
     Function
 };
 
-
-
-export function getDeclaredFunctions(document: vscode.TextDocument): Function[] {
-
-    let lines = document.lineCount;
-    let funcs = [];
-
-    for (let i = 0; i < lines; i++) {
-        let line: vscode.TextLine = document.lineAt(i);
-        if (line.isEmptyOrWhitespace) continue;
-        let newFunc = parseFunction(line.text)
-        if(newFunc){
-            funcs.push({...newFunc, lineNumber: i });
-        }
-    }
-    return funcs;
-}
-
-export function getDeclaredSubroutines(document: vscode.TextDocument):Subroutine[]{
-
-    let lines = document.lineCount;
-    let subroutines = [];
-
-    for (let i = 0; i < lines; i++) {
-        let line: vscode.TextLine = document.lineAt(i);
-        if (line.isEmptyOrWhitespace) continue;
-        let newSubroutine = parseSubroutine(line.text)
-        if(newSubroutine){
-            subroutines.push({...newSubroutine, lineNumber: i });
-        }
-    }
-    return subroutines;
-}
 
 
 
@@ -193,9 +160,9 @@ export const _parse_new = (line: string, parent: string) => {
                 in: parent
             };
         } else if (line.match(subroutineRegEx)) {
-            let temp =subroutineRegEx.exec(line)
-            let name = temp[2]
-            let argsstr = temp[3];
+            let temp =subroutineRegEx.exec(line);
+            let name = temp[3];
+            let argsstr = temp[4];
             // l/et [name, argsstr] = temp.slice(1);
             let args = (argsstr) ? parseArgs(argsstr) : [];
             return {

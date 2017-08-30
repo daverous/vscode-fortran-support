@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import { parseSubroutineAndFunctions } from '../lib/functions';
 
 // export class AlphaFortranFormatter implements vscode.DocumentFormattingEditProvider {
+//     provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.ProviderResult<vscode.TextEdit[]> {
+//         throw new Error("Method not implemented.");
+//     }
 
 //     protected static spacePlaceholderStr = '__VSCODE__SPACE__PLACEHOLDER__';
 //     protected static depth: number = 0;
@@ -21,20 +24,27 @@ import { parseSubroutineAndFunctions } from '../lib/functions';
 //         public formatDocument(document: vscode.TextDocument):
 //             Thenable<vscode.TextEdit[]> {
 //                 let lines = document.lineCount;
-//                 let funcs = [];
+//                 let blocks:boolean[] = [];
 //                 let curSubName = "";
-//                 let curDepth = "";
-//                 let ifRegexe = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
-//                 let blockReger = /^(block)/ig;
+//                 let curDepth:number = 0;
+
+                
 //                 for (let i = 0; i < lines; i++) {
 //                     let line: vscode.TextLine = document.lineAt(i);
 //                     if (line.isEmptyOrWhitespace) continue;
 //                     if (line[line.firstNonWhitespaceCharacterIndex] = '#') {
 //                         // TODO set depth to be 0, as this has to be preprocessored
 //                     }
+//                     if (line[line.firstNonWhitespaceCharacterIndex] = '!') {
+//                         // TODO depth has to be the 
+//                     }
+
 //                     let subFuct = parseSubroutineAndFunctions(line.text,curSubName )
 //                 }
 
 //         }
-//     }
+
+
+        
+    }
     

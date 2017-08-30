@@ -1,39 +1,55 @@
 
 import * as vscode from 'vscode';
 
-export interface Variable {
+export const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
+export const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const varibleDecRegEx = /(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+export const typeDecRegEx = /type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do))end)/ig; // regex means that ends won't work for inside
+// TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
+export const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const moduleRegex = /^module\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+export const ifRegexe = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
+export const blockReger = /^(block)/ig;
+
+export const useregex = /^((use\s([a-zA-Z0-9_]{1,})))((((\s*,\s*([a-zA-Z0-9_]{1,}))*)\s*$)|(\s*,\s*only\s*:\s*(\s*([a-zA-Z0-9_]{1,})(\s*,\s*([a-zA-Z0-9_]{1,}))*)))/ig
+
+// capture group 3 is first use, group 4 is other uses, capture group 10 is only variables 
+//
+
+export abstract class ProgramPart {
     name: string;
-    type?: string;
+    
     lineNumber?: number;
     parent?: string;
 }
-
-export interface Class {
-    name: string;
+export interface Variable extends ProgramPart{
     type?: string;
-    lineNumber?: number;
-    parent?: string;
 }
 
-export interface Package {
+export interface Class extends ProgramPart{
+    usages: Package[];
     name: string;
-    type?: string;
-    lineNumber?: number;
-    parent?: string;
+    // TODO maybe a list of variables
 }
 
+export interface Package extends ProgramPart {
+    usages: Package[]
+}
 
-export interface Subroutine {
-
+export interface Subroutine extends ProgramPart {
+    usages: Package[];
     name: string;
     args: Variable[];
     docstr: string;
     parent?: string;
-    lineNumber: number
+    lineNumber: number;
 }
 
-export interface Function extends Subroutine {    
-
+export interface Function extends ProgramPart {    
+    usages: Package[]
+    args: Variable[];
     return: Variable; // function is a subroutine with return type
 }
 
@@ -130,58 +146,32 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
     }
 
 
-
-export const parseFunction = (line: string) => {
-
-    return _parse(line, MethodType.Function);
-}
-
-export const parseSubroutine = (line: string) => {
-
-    return _parse(line, MethodType.Subroutine);
-}
-
 export const parseSubroutineAndFunctions = (line: string, curSubName : string) => {
     
         return _parse_new(line,curSubName);
     }
 
-export const _parse = (line: string, type: MethodType) => {
+export function matchBlock(line: string): boolean {
+    line = line.trim();
 
-    const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)\s*(result\([a-zA-Z_][\w]*\))*/g;
-    const subroutineRegEx = /subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)/g;
-    const interfaceRegEx = /subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\((\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)/g;
-    const regEx = (type === MethodType.Subroutine) ? subroutineRegEx : functionRegEx;
-    if (line.match(regEx) && type === MethodType.Function) {
-        let [attr, kind_descriptor, name, argsstr, result] = regEx.exec(line).slice(1, 5);
-        let args = (argsstr) ? parseArgs(argsstr) : [];
-        return {
-            name: name,
-            args: args
-        };
-    } else if (line.match(regEx) && type === MethodType.Subroutine) {
-        let [name, argsstr] = regEx.exec(line).slice(1);
-        let args = (argsstr) ? parseArgs(argsstr) : [];
-        return {
-            name: name,
-            args: args
-        };
-    } 
+    if (line.match(functionRegEx)) 
+        
+    if (line.match(subroutineRegEx)) return true;
+    if (line.match(varibleDecRegEx)) return true;
+    if (line.match(typeDecRegEx)) return true;
+    if (line.match(interfaceRegEx)) return true;
+    if (line.match(endRegex)) return true;
+    if (line.match(programRegex)) return true;
+    if (line.match(moduleRegex)) return true;
+    if (line.match(ifRegexe)) return true;
+    if (line.match(blockReger)) return true;
 
+    return false;
 }
-
 
 export const _parse_new = (line: string, parent: string) => {
         line = line.trim()
-        const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
-        const subroutineRegEx = /(^(?!end\s))subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-        const varibleDecRegEx = /(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
-        const typeDecRegEx = /type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
-        const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-        const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do))end)/ig; // regex means that ends won't work for inside
-        // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
-        const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-        const moduleRegex = /^module\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
+
 
         if (line.match(endRegex)) {
             return {

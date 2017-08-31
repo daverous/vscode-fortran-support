@@ -73,9 +73,11 @@ export class FortranCompletionProvider implements vscode.CompletionItemProvider 
                 suggestions.push(new vscode.CompletionItem(fun.name, vscode.CompletionItemKind.Function));   
             });
             
-            const vars = funcsSubsAndVars[2];
+            // get only unique variables
+            // TODO this shouldn't need done 
+            const vars = new Set(funcsSubsAndVars[2]);
             // check for available functions
-            vars.filter(v => v.name.toLowerCase().startsWith(currentWord.toLowerCase()))
+            [...vars].filter(v => v.name.toLowerCase().startsWith(currentWord.toLowerCase()))
             .forEach(v =>{
                 suggestions.push(new vscode.CompletionItem(v.name, vscode.CompletionItemKind.Function));   
             });

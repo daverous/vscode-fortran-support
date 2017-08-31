@@ -1,7 +1,7 @@
 
 import * as vscode from 'vscode';
 
-export const functionRegEx = /^(?!end)([a-zA-Z]+(\([\w.=]+\))*)*\s*function\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
+export const functionRegEx = /^(?!end)([a-zA-Z](\([\w.=]+\))*)*\s*function\s*([a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
 export const subroutineRegEx = /(^(?!end\s))([a-zA-Z]{1,}\s+)*subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
@@ -72,9 +72,15 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
         let curBlock = [];
         for (let i = 0; i < lines; i++) {
             let line: vscode.TextLine = document.lineAt(i);
+
+            if (i == 431) {
+                console.log("hi")
+            }
             if (line.isEmptyOrWhitespace) continue;
             let subFuct = parseSubroutineAndFunctions(line.text,curBlock[curBlock.length-1] );
 
+
+           
             if (subFuct != null) {
                 if (subFuct.what =="end") {
                     // pop item off the top of the stack 
@@ -109,6 +115,7 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
                 }
             }
         }
+        console.log("HERE")
         return [subroutines,funcs,vars, classes,packs];
     }
 
@@ -121,7 +128,7 @@ export const parseSubroutineAndFunctions = (line: string, curSubName : string) =
 export function matchBlock(line: string): boolean {
     line = line.trim();
 
-    if (line.match(functionRegEx)) 
+    if (line.match(functionRegEx)) return true;
         
     if (line.match(subroutineRegEx)) return true;
     if (line.match(varibleDecRegEx)) return true;
@@ -139,7 +146,7 @@ export function matchBlock(line: string): boolean {
 export const _parse_new = (line: string, parent: string) => {
         line = line.trim()
 
-
+        let temp = line.match(functionRegEx)
         if (line.match(endRegex)) {
             return {
                 what: "end",
@@ -149,6 +156,7 @@ export const _parse_new = (line: string, parent: string) => {
                 in: ""
             }
         }
+        
         else if (line.match(functionRegEx)) {
             let [attr, kind_descriptor, name, argsstr, result] = functionRegEx.exec(line).slice(1, 5);
             let args = (argsstr) ? parseArgs(argsstr) : [];

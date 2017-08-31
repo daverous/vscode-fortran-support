@@ -39,19 +39,19 @@ export class FortranCompletionProvider implements vscode.CompletionItemProvider 
                 return resolve([]);
             }
 
-            let suggestions = [];
+            let suggestions = new Set();
 
             if (currentWord.length > 0) {
                 intrinsics.forEach(intrinsic => {
                     if (intrinsic.startsWith(currentWord.toUpperCase())) {
-                        suggestions.push(new vscode.CompletionItem(intrinsic, vscode.CompletionItemKind.Method));
+                        suggestions.add(new vscode.CompletionItem(intrinsic, vscode.CompletionItemKind.Method));
                     }
                 });
 
                 // add keyword suggestions
                FORTRAN_KEYWORDS.forEach(keyword => {
                     if (keyword.startsWith(currentWord.toUpperCase())) {
-                        suggestions.push(new vscode.CompletionItem(keyword.toLowerCase(), vscode.CompletionItemKind.Keyword));
+                        suggestions.add(new vscode.CompletionItem(keyword.toLowerCase(), vscode.CompletionItemKind.Keyword));
                     }
                 });
             }
@@ -63,27 +63,26 @@ export class FortranCompletionProvider implements vscode.CompletionItemProvider 
             // check for available functions
             subs.filter(sub => sub.name.toLowerCase().startsWith(currentWord.toLowerCase()))
             .forEach(sub =>{
-                suggestions.push(new vscode.CompletionItem(sub.name, vscode.CompletionItemKind.Function));   
+                suggestions.add(new vscode.CompletionItem(sub.name, vscode.CompletionItemKind.Function));   
             });
 
             const functions = funcsSubsAndVars[1];
             // check for available functions
             functions.filter(fun => fun.name.toLowerCase().startsWith(currentWord.toLowerCase()))
             .forEach(fun =>{
-                suggestions.push(new vscode.CompletionItem(fun.name, vscode.CompletionItemKind.Function));   
+                suggestions.add(new vscode.CompletionItem(fun.name, vscode.CompletionItemKind.Function));   
             });
             
             // get only unique variables
             // TODO this shouldn't need done 
-            const vars = new Set(funcsSubsAndVars[2]);
+            const vars = funcsSubsAndVars[2].filter(v => v.name.toLowerCase().startsWith(currentWord.toLowerCase())).map( a => a.name);
             // check for available functions
-            [...vars].filter(v => v.name.toLowerCase().startsWith(currentWord.toLowerCase()))
-            .forEach(v =>{
-                suggestions.push(new vscode.CompletionItem(v.name, vscode.CompletionItemKind.Function));   
+            vars.forEach(v =>{
+                suggestions.add(new vscode.CompletionItem(v, vscode.CompletionItemKind.Function));   
             });
             
 
-            return resolve(suggestions);
+            return resolve([...suggestions]);
 
         })
 

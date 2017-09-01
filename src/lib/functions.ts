@@ -1,5 +1,6 @@
 
 import * as vscode from 'vscode';
+import { Range, Position, TextDocument, FormattingOptions, TextEditorOptions } from 'vscode';
 
 export const functionRegEx = /^(?!end)([a-zA-Z](\([\w.=]+\))*)*\s*function\s*([a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
 export const subroutineRegEx = /(^(?!end\s))([a-zA-Z]{1,}\s+)*subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
@@ -59,6 +60,14 @@ export enum MethodType {
 };
 
 
+
+
+export function getRange(document: TextDocument): Range {
+  let start: Position = new Position(0, 0);
+  let endLine = document.lineCount - 1;
+  let end: Position = new Position(endLine, document.lineAt(endLine).text.length);
+  return new Range(start, end);
+}
 
 
 export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.TextDocument):[Subroutine[],Function[],Variable[],Class[],Package[]]{

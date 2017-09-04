@@ -8,12 +8,18 @@ export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s
 export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
+export const endTypeRegex = /^(end\s*(type|select|subroutine|if|function|do|block|module|program))/ig; // regex means that ends won't work for inside
+
+
 // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
 export const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const moduleRegex = /^module\s+((?!procedure\s+)[a-zA-Z0-9_]{1,})/ig;
-export const ifRegexe = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
-export const blockReger = /^(block)/ig;
-
+export const ifRegex = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
+export const elseifRegex = /^((else\s*if)(\s*\(.+\))\s*then)/ig;
+export const elseRegex = /^(else\s*)$/ig;
+export const blockRegex = /^(block)/ig;
+export const doRegex = /^do(\s.*)*$/ig;
+export const containsRegex = /^contains$/ig;
 export const useregex = /^((use\s([a-zA-Z0-9_]{1,})))((((\s*,\s*([a-zA-Z0-9_]{1,}))*)\s*$)|(\s*,\s*only\s*:\s*(\s*([a-zA-Z0-9_]{1,})(\s*,\s*([a-zA-Z0-9_]{1,}))*)))/ig
 
 // capture group 3 is first use, group 4 is other uses, capture group 10 is only variables 
@@ -140,14 +146,17 @@ export function matchBlock(line: string): boolean {
     if (line.match(functionRegEx)) return true;
         
     if (line.match(subroutineRegEx)) return true;
-    if (line.match(varibleDecRegEx)) return true;
-    if (line.match(typeDecRegEx)) return true;
+    if (line.match(containsRegex)) return true;
+    // if (line.match(typeDecRegEx)) return true;
+
     if (line.match(interfaceRegEx)) return true;
-    if (line.match(endRegex)) return true;
+    if (line.match(elseRegex)) return true;
     if (line.match(programRegex)) return true;
     if (line.match(moduleRegex)) return true;
-    if (line.match(ifRegexe)) return true;
-    if (line.match(blockReger)) return true;
+    if (line.match(ifRegex)) return true;
+    if (line.match(elseifRegex)) return true;
+    if (line.match(blockRegex)) return true;
+    if (line.match(doRegex)) return true;
 
     return false;
 }

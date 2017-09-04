@@ -6,7 +6,7 @@ import {
     commands, window, DocumentSelector,
     languages, Position, Range,TextLine
   } from 'vscode';
-import { parseSubroutineAndFunctions, matchBlock,endRegex,getRange } from '../lib/functions';
+import { parseSubroutineAndFunctions, matchBlock,endTypeRegex,getRange, elseifRegex, elseRegex } from '../lib/functions';
 
 export default class AlphaFortranFormatter implements DocumentFormattingEditProvider {
 
@@ -48,26 +48,51 @@ export default class AlphaFortranFormatter implements DocumentFormattingEditProv
                 for (let i = 0; i < lines; i++) {
                     let line: TextLine = document.lineAt(i);
                     let lineText = line.text;
-                    if (line.isEmptyOrWhitespace) continue;
-                    if (line[line.firstNonWhitespaceCharacterIndex] = '#') {
-                        // TODO set depth to be 0, as this has to be preprocessored
+                    lineText = lineText.trim();
+                    if (line.isEmptyOrWhitespace) formattedText += '\n';
+                    else if (line[line.firstNonWhitespaceCharacterIndex] == '#') {
+                        formattedText += lineText + '\n';
+                        return;
                     }
-                    else if (line[line.firstNonWhitespaceCharacterIndex] = '!') {
-                        // TODO depth has to be the smae
-                    }
-
-                    else if (matchBlock(lineText)) {
-                        curDepth++;
-                        
-                    }
-                    else if (lineText.match(endRegex)) {
+                    // if (line[line.firstNonWhitespaceCharacterIndex] == '!') {
+                    //     // TODO depth has to be the smae
+                    // }
+                    else if (lineText.match(endTypeRegex)) {
                         curDepth--;
+                        for (let h=0; h< curDepth; h++) {
+                            formattedText = formattedText + '\t';
+                        }
+                        formattedText += lineText + '\n';
                     }
-                    for (let h=0; h< curDepth; h++) {
-                        formattedText = formattedText + '\t';
-                    }
-                    formattedText += lineText;
 
+                    else if ( lineText.match(elseifRegex) || lineText.match(elseRegex)) {
+                        curDepth--;
+                        for (let h=0; h< curDepth; h++) {
+                            formattedText = formattedText + '\t';
+                        }
+                        formattedText += lineText + '\n';
+                        curDepth++;
+                    }  
+
+
+                    
+
+                    else {
+                        for (let h=0; h< curDepth; h++) {
+                            formattedText = formattedText + '\t';
+                        }
+                        formattedText += lineText + '\n';    
+                    
+             
+
+                        if (matchBlock(lineText)) {
+                            
+                            curDepth++;
+                            
+                        }
+                }
+                   
+                  
 
 
                 }

@@ -50,9 +50,9 @@ export default class AlphaFortranFormatter implements DocumentFormattingEditProv
                     let lineText = line.text;
                     lineText = lineText.trim();
                     if (line.isEmptyOrWhitespace) formattedText += '\n';
-                    else if (line[line.firstNonWhitespaceCharacterIndex] == '#') {
+                    else if (lineText.charAt(0) == '#') {
                         formattedText += lineText + '\n';
-                        return;
+                    
                     }
                     // if (line[line.firstNonWhitespaceCharacterIndex] == '!') {
                     //     // TODO depth has to be the smae

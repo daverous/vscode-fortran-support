@@ -8,7 +8,7 @@ export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s
 export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
-export const endTypeRegex = /^(end\s*(type|select|subroutine|if|function|do|block|module|program))/ig; // regex means that ends won't work for inside
+export const endTypeRegex = /^(end\s*(type|select|subroutine|interface|if|function|do|block|module|program))/ig; // regex means that ends won't work for inside
 
 
 // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
@@ -87,10 +87,6 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
         let curBlock = [];
         for (let i = 0; i < lines; i++) {
             let line: vscode.TextLine = document.lineAt(i);
-
-            if (i == 431) {
-                console.log("hi")
-            }
             if (line.isEmptyOrWhitespace) continue;
             let subFuct = parseSubroutineAndFunctions(line.text,curBlock[curBlock.length-1] );
 
@@ -129,8 +125,7 @@ export function getDeclaredSubroutinesVariablesAndFunctions(document: vscode.Tex
                     classes.push({...subFuct, lineNumber: i , parent  : subFuct.in, type : subFuct.type});
                 }
             }
-        }
-        console.log("HERE")
+        } 
         return [subroutines,funcs,vars, classes,packs];
     }
 

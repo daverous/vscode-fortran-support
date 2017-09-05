@@ -6,7 +6,7 @@ import {
     commands, window, DocumentSelector,
     languages, Position, Range, TextLine
 } from 'vscode';
-import { parseSubroutineAndFunctions, matchBlock,caseRegex, endTypeRegex, getRange, elseifRegex, elseRegex } from '../lib/functions';
+import { parseSubroutineAndFunctions, matchBlock,caseRegex, endTypeRegex, getRange, elseifRegex, elseRegex,endModuleRegex } from '../lib/functions';
 
 export default class AlphaFortranFormatter implements DocumentFormattingEditProvider {
 
@@ -69,6 +69,13 @@ export default class AlphaFortranFormatter implements DocumentFormattingEditProv
             // }
             else if (matchText.match(endTypeRegex)) {
                 curDepth--;
+                for (let h = 0; h < curDepth; h++) {
+                    formattedText = formattedText + '\t';
+                }
+                formattedText += lineText + '\n';
+            }
+            else if (matchText.match(endModuleRegex)) {
+                curDepth-=2;
                 for (let h = 0; h < curDepth; h++) {
                     formattedText = formattedText + '\t';
                 }

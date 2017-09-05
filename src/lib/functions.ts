@@ -8,8 +8,8 @@ export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s
 export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
-export const endTypeRegex = /^(end\s*(type|select|subroutine|interface|if|function|do|block|module|program))/ig; // regex means that ends won't work for inside
-
+export const endTypeRegex = /^(end\s*(type|select|subroutine|interface|if|function|do|block|program))/ig; // regex means that ends won't work for inside
+export const endModuleRegex = /^(end\s*(module))/ig;
 // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
 export const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const moduleRegex = /^module\s+((?!procedure\s+)[a-zA-Z0-9_]{1,})/ig;
@@ -17,7 +17,7 @@ export const ifRegex = /^((if|else\s*if)(\s*\(.+\))\s*then)/ig;
 export const elseifRegex = /^((else\s*if)(\s*\(.+\))\s*then)/ig;
 export const elseRegex = /^(else\s*)$/ig;
 export const blockRegex = /^(block)/ig;
-export const doRegex = /^do(\s.*)*$/ig;
+export const doRegex = /^(.*:\s*)?do(\s.*)*$/ig;
 export const containsRegex = /^contains$/ig;
 export const useregex = /^((use\s([a-zA-Z0-9_]{1,})))((((\s*,\s*([a-zA-Z0-9_]{1,}))*)\s*$)|(\s*,\s*only\s*:\s*(\s*([a-zA-Z0-9_]{1,})(\s*,\s*([a-zA-Z0-9_]{1,}))*)))/ig
 export const multiLineThenRegexe = /^(.*\sthen)$/ig;

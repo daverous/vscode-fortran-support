@@ -10,7 +10,6 @@ export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-
 export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
 export const endTypeRegex = /^(end\s*(type|select|subroutine|interface|if|function|do|block|module|program))/ig; // regex means that ends won't work for inside
 
-
 // TODO should use a stack to build a higherarchy, these should have a parent depth parameter, 
 export const programRegex = /^program\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const moduleRegex = /^module\s+((?!procedure\s+)[a-zA-Z0-9_]{1,})/ig;
@@ -21,7 +20,9 @@ export const blockRegex = /^(block)/ig;
 export const doRegex = /^do(\s.*)*$/ig;
 export const containsRegex = /^contains$/ig;
 export const useregex = /^((use\s([a-zA-Z0-9_]{1,})))((((\s*,\s*([a-zA-Z0-9_]{1,}))*)\s*$)|(\s*,\s*only\s*:\s*(\s*([a-zA-Z0-9_]{1,})(\s*,\s*([a-zA-Z0-9_]{1,}))*)))/ig
-
+export const multiLineThenRegexe = /^(.*\sthen)$/ig;
+export const selectCaseRegex = /^(select\scase\s*\(.*\))$/;
+export const caseRegex = /^(case\s*\(.*\))$/;
 // capture group 3 is first use, group 4 is other uses, capture group 10 is only variables 
 //
 
@@ -30,6 +31,7 @@ export abstract class ProgramPart {
     
     lineNumber?: number;
     parent?: string;
+    parentObject?: ProgramPart;
 }
 export interface Variable extends ProgramPart{
     type?: string;
@@ -50,7 +52,6 @@ export interface Subroutine extends ProgramPart {
     name: string;
     args: Variable[];
     docstr: string;
-    parent?: string;
     lineNumber: number;
 }
 
@@ -152,6 +153,8 @@ export function matchBlock(line: string): boolean {
     if (line.match(elseifRegex)) return true;
     if (line.match(blockRegex)) return true;
     if (line.match(doRegex)) return true;
+    if (line.match(selectCaseRegex)) return true;
+    // if (line.match(multiLineThenRegexe)) return true;
 
     return false;
 }

@@ -340,7 +340,7 @@
 			<key>comment</key>
 			<string>programming units</string>
 			<key>match</key>
-			<string>\b(?i:((end\s*)?(interface|procedure|module)))\b</string>
+			<string>\b(?i:((end\s*)?(interface|procedure|final|module)))\b</string>
 			<key>name</key>
 			<string>keyword.other.programming-units.fortran.modern</string>
 		</dict>

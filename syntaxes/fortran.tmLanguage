@@ -320,7 +320,7 @@
 			<key>comment</key>
 			<string>data type attributes</string>
 			<key>match</key>
-			<string>\b(?i:(dimension|common|equivalence|parameter|external|intrinsic|save|data|implicit\s*none|implicit|intent|in|out|inout))\b</string>
+			<string>\b(?i:(dimension|common|equivalence|parameter|external|intrinsic|save|data|implicit\s*none|allocatable|implicit|intent|in|out|inout))\b</string>
 			<key>name</key>
 			<string>storage.modifier.fortran</string>
 		</dict>

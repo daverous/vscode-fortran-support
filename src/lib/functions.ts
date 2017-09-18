@@ -4,7 +4,7 @@ import { Range, Position, TextDocument, FormattingOptions, TextEditorOptions } f
 
 export const functionRegEx = /^(?!end)([a-zA-Z](\([\w.=]+\))*)*\s*function\s*([a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z_][a-zA-Z0-9_,\s]*)*\s*\)*\s*(result\([a-zA-Z_][\w]*\))*/ig;
 export const subroutineRegEx = /(^(?!end\s))([a-zA-Z]{1,}\s+)*subroutine\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
-export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\(kind=*[a-zA-Z0-9]{1,}\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
+export const varibleDecRegEx = /^(([a-zA-Z]{1,})(\((kind=)*([a-zA-Z0-9]{1,})\))?(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const typeDecRegEx = /^type(,\s*[a-zA-Z0-9]{1,}(\(.*\))?)*\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)/ig;
 export const interfaceRegEx = /^interface\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(*(\s*[a-zA-Z][a-zA-z0-9_,\s]*)*\s*\)*/ig;
 export const endRegex = /^((?!(end\s*block|end\s*if|end\s*select|end\s*do|end\s*type))end)/ig; // regex means that ends won't work for inside
@@ -206,7 +206,7 @@ export const _parse_new = (line: string, parent: string) => {
             return {what: "inter", name: name, type: "", in: parent};
         } else if(line.match(varibleDecRegEx)) {
             
-            let [matchExp, type, kind, props,temp,temp2, name ] = varibleDecRegEx.exec(line)
+            let [matchExp, temp1, type, props,temp,kind,test,testj, name ] = varibleDecRegEx.exec(line)
             return {what: "var", name: name, type: type, in: parent};
         } else if(line.match(programRegex)) {
             
